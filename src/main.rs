@@ -10,6 +10,7 @@ use axum::response::{Html, IntoResponse, Response};
 use axum::routing::{get, get_service};
 use axum::{middleware, Router};
 use serde::Deserialize;
+use tower_cookies::CookieManagerLayer;
 use tower_http::services::ServeDir;
 
 pub use self::error::{Error, Result};
@@ -21,6 +22,7 @@ async fn main() {
         .merge(routes_hello())
         .merge(routes_login::routes())
         .layer(middleware::map_response(main_response_mapper))
+        .layer(CookieManagerLayer::new()) // Layers are executed bottom to top, meaning if you want to have the cookie data on all the other middlewares, it has to be on top
         .fallback_service(routes_static()); // usually static routing is done as a fallback
 
     let addr = SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 8080);
