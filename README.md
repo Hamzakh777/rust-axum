@@ -6,3 +6,8 @@
 
 ## Notes
 - In Rust, the idiomatic way to pass references to params is to pass a reference to the slice rather than to the object: https://rust-lang.github.io/rust-clippy/master/index.html#/ptr_arg
+
+
+## Conventions
+- `routes_{SOMETHING}` should have a `routes() -> Router` function that returns the router for the whole module
+  
