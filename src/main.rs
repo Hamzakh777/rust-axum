@@ -2,6 +2,7 @@
 
 mod error;
 mod web;
+mod model;
 
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 

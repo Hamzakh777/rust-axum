@@ -11,3 +11,9 @@
 ## Conventions
 - `routes_{SOMETHING}` should have a `routes() -> Router` function that returns the router for the whole module
   
+## Architecture
+Web (IPC)
+Context + Event
+Model 
+Store
+

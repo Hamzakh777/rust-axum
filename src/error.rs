@@ -7,6 +7,9 @@ pub type Result<T> = core::result::Result<T, Error>;
 #[derive(Debug)]
 pub enum Error {
     LoginFail, 
+
+    // -- Model errors.
+    TicketDeleteFailIdNotFound { id: u64 },
 }
 
 /// For more details: https://docs.rs/axum/latest/axum/response/trait.IntoResponse.html#implementing-intoresponse
