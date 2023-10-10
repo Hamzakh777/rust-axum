@@ -15,23 +15,29 @@ use tower_cookies::CookieManagerLayer;
 use tower_http::services::ServeDir;
 
 pub use self::error::{Error, Result};
-use crate::web::routes_login;
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<()> {
+    // Intiliaze ModelController
+    let mc = model::ModelController::new().await.unwrap();
+    
     let routes_all = Router::new()
         .merge(routes_hello())
-        .merge(routes_login::routes())
+        .merge(web::routes_login::routes())
+        .nest("/api", web::routes_tickets::routes(mc.clone()))
         .layer(middleware::map_response(main_response_mapper))
         .layer(CookieManagerLayer::new()) // Layers are executed bottom to top, meaning if you want to have the cookie data on all the other middlewares, it has to be on top
         .fallback_service(routes_static()); // usually static routing is done as a fallback
 
     let addr = SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 8080);
+    
     println!("->> LISTENING on {addr}\n");
+
     axum::Server::bind(&addr)
         .serve(routes_all.into_make_service())
-        .await
-        .unwrap();
+        .await;
+
+    Ok(())
 }
 
 async fn main_response_mapper(res: Response) -> Response {
