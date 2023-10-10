@@ -4,9 +4,14 @@ use axum::{response::IntoResponse, http::StatusCode};
 
 pub type Result<T> = core::result::Result<T, Error>;
 
+// the reason for having section is that we can later have errors per module 
 #[derive(Debug)]
 pub enum Error {
     LoginFail, 
+
+    // -- Auth errors.
+    AuthFailNoAuthTokenCookie,
+    AuthFailTokenWrongFormat,
 
     // -- Model errors.
     TicketDeleteFailIdNotFound { id: u64 },

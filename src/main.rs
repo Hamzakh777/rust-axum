@@ -20,17 +20,21 @@ pub use self::error::{Error, Result};
 async fn main() -> Result<()> {
     // Intiliaze ModelController
     let mc = model::ModelController::new().await.unwrap();
+
+    let routes_apis = web::routes_tickets::routes(mc.clone())
+        // we are calling `route_layer` here because we only want to apply the middleware to routes_tickets
+        .route_layer(middleware::from_fn(web::mw_auth::mw_require_auth));
     
     let routes_all = Router::new()
         .merge(routes_hello())
         .merge(web::routes_login::routes())
-        .nest("/api", web::routes_tickets::routes(mc.clone()))
+        .nest("/api", routes_apis)
         .layer(middleware::map_response(main_response_mapper))
         .layer(CookieManagerLayer::new()) // Layers are executed bottom to top, meaning if you want to have the cookie data on all the other middlewares, it has to be on top
         .fallback_service(routes_static()); // usually static routing is done as a fallback
 
     let addr = SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 8080);
-    
+
     println!("->> LISTENING on {addr}\n");
 
     axum::Server::bind(&addr)
